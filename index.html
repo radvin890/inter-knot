@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inter-Knot</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#0e0f12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Inter-Knot">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230e0f12'/%3E%3Crect y='46' width='64' height='6' fill='%23e4ff1a'/%3E%3Ctext x='32' y='40' font-family='Impact,Arial Black,sans-serif' font-size='34' font-weight='900' fill='%23e4ff1a' text-anchor='middle'%3EIK%3C/text%3E%3C/svg%3E">
+<style>
+:root{--ink:#0e0f12;--panel:#17191e;--line:#2a2d35;--text:#e8ebef;--dim:#8a909c;--hi:#e4ff1a;--red:#ff4b3e}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:var(--ink);color:var(--text);font:15px/1.6 Tahoma,"Segoe UI",system-ui,sans-serif}
+button,input{font:inherit;color:inherit}
+.logo{font:800 22px/1 "Bahnschrift","Arial Narrow",Impact,sans-serif;letter-spacing:.5px;direction:ltr;color:var(--hi)}
+#login{min-height:100%;display:grid;place-items:center;padding:20px;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.025) 3px 4px)}
+.card{width:min(360px,100%);background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--hi);padding:26px;display:grid;gap:12px}
+.card input{background:var(--ink);border:1px solid var(--line);padding:10px 12px;direction:ltr;text-align:left}
+.card input:focus,#msg:focus{outline:2px solid var(--hi);outline-offset:1px}
+.btn{background:var(--hi);color:#111;border:0;padding:10px;font-weight:700;cursor:pointer}
+.link{background:none;border:0;color:var(--dim);cursor:pointer;text-decoration:underline}
+#err{color:var(--red);min-height:1.4em;font-size:13px}
+#app{display:none;height:100%;grid-template-columns:230px 1fr}
+aside{background:var(--panel);border-inline-end:1px solid var(--line);padding:16px 10px;display:flex;flex-direction:column;gap:6px}
+aside .logo{padding:0 8px 12px}
+.ch{background:none;border:0;text-align:start;padding:9px 12px;cursor:pointer;color:var(--dim);border-inline-start:3px solid transparent}
+.ch:hover{color:var(--text)}
+.ch.on{color:var(--text);background:var(--ink);border-inline-start-color:var(--hi)}
+.me{margin-top:auto;padding:8px 12px;font-size:13px;color:var(--dim);display:flex;justify-content:space-between;align-items:center}
+main{display:flex;flex-direction:column;min-height:0}
+#top{padding:12px 20px;border-bottom:1px solid var(--line);font-weight:700}
+#list{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.015) 3px 4px)}
+.m{max-width:min(520px,85%);align-self:flex-start;background:var(--panel);border:1px solid var(--line);padding:8px 12px}
+.m.mine{align-self:flex-end;border-color:var(--hi)}
+.n{font-size:12px;color:var(--hi);font-weight:700;direction:ltr;text-align:start;display:flex;align-items:center;gap:6px}
+.av{width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--line);flex:none}
+#myav{width:32px;height:32px;cursor:pointer;border:2px solid var(--hi)}
+.m.mine .n{color:var(--dim)}
+.t{white-space:pre-wrap;word-break:break-word}
+.m img,.m video{max-width:100%;max-height:320px;display:block;margin-top:6px}
+.m audio{margin-top:6px;max-width:100%}
+.del{float:inline-end;background:none;border:0;cursor:pointer;opacity:.45;margin-inline-start:10px}
+.del:hover,.del:focus-visible{opacity:1}
+form{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);background:var(--panel)}
+#msg{flex:1;min-width:0;background:var(--ink);border:1px solid var(--line);padding:10px 12px}
+.ic{background:var(--ink);border:1px solid var(--line);width:42px;cursor:pointer}
+.ic.rec{background:var(--red);border-color:var(--red)}
+@media(max-width:700px){#app{grid-template-columns:1fr;grid-template-rows:auto 1fr}aside{flex-direction:row;align-items:center;overflow-x:auto;padding:8px;border:0;border-bottom:1px solid var(--line)}aside .logo{padding:0 8px}.me{margin:0 auto 0 0;white-space:nowrap}.ch{white-space:nowrap;border-inline-start:0;border-bottom:3px solid transparent}.ch.on{border-bottom-color:var(--hi)}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<section id="login">
+  <div class="card">
+    <div class="logo">INTER-KNOT</div>
+    <input id="u" placeholder="username" autocomplete="username">
+    <input id="p" type="password" placeholder="password" autocomplete="current-password">
+    <div id="err"></div>
+    <button class="btn" id="go">ورود</button>
+    <button class="link" id="sw">حساب نداری؟ بساز</button>
+  </div>
+</section>
+<div id="app">
+  <aside><div class="logo">INTER-KNOT</div><div id="chs" style="display:contents"></div><div class="me"><img id="myav" class="av" title="تغییر عکس پروفایل" alt="پروفایل"><span id="who"></span><button class="link" id="out">خروج</button><input type="file" id="pf" accept="image/*" hidden></div></aside>
+  <main>
+    <div id="top"></div>
+    <div id="list"></div>
+    <form id="f">
+      <button type="button" class="ic" id="clip" title="عکس یا ویدیو">📎</button>
+      <button type="button" class="ic" id="mic" title="پیام صوتی">🎙</button>
+      <input id="msg" placeholder="پیام بنویس..." autocomplete="off" dir="auto">
+      <button class="btn" style="padding:0 18px">ارسال</button>
+      <input type="file" id="file" accept="image/*,video/*,audio/*" hidden>
+    </form>
+  </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = "https://shpxrflqpxwujvkfcxqy.supabase.co";
+const SUPABASE_KEY = "sb_publishable_1oQVHM6zdXxgzt_8-D-X5w_45V6UP3e";
+const CHANNELS = [["general","عمومی"],["videoclub","ویدیوکلوب"],["ops","اتاق عملیات"]];
+const $ = id => document.getElementById(id);
+let sb, me, name, avatar, cur = CHANNELS[0][0], mode = "in", live, rec, chunks = [];
+
+if (!window.supabase) { $("err").textContent = "کتابخانه لود نشد (اینترنت یا فیلتر)"; }
+else { sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  sb.auth.getSession().then(({data}) => data.session && start(data.session.user)); }
+
+$("sw").onclick = () => { mode = mode === "in" ? "up" : "in";
+  $("go").textContent = mode === "in" ? "ورود" : "ساخت حساب";
+  $("sw").textContent = mode === "in" ? "حساب نداری؟ بساز" : "حساب داری؟ وارد شو"; };
+$("go").onclick = async () => {
+  const u = $("u").value.trim().toLowerCase(), p = $("p").value;
+  if (!/^[a-z0-9_]{3,20}$/.test(u)) return $("err").textContent = "نام کاربری: ۳ تا ۲۰ حرف انگلیسی، عدد یا _";
+  if (p.length < 6) return $("err").textContent = "رمز حداقل ۶ حرف";
+  const email = u + "@inter-knot.app";
+  const r = mode === "up"
+    ? await sb.auth.signUp({email, password: p, options: {data: {username: u}}})
+    : await sb.auth.signInWithPassword({email, password: p});
+  if (r.error) return $("err").textContent = r.error.message;
+  if (!r.data.session) return $("err").textContent = "در تنظیمات Supabase گزینه Confirm email را خاموش کن";
+  start(r.data.user);
+};
+$("out").onclick = async () => { await sb.auth.signOut(); location.reload(); };
+
+function start(user) {
+  me = user; name = user.user_metadata.username || "user";
+  $("login").style.display = "none"; $("app").style.display = "grid"; $("who").textContent = name;
+  avatar = user.user_metadata.avatar || null; $("myav").src = avSrc(avatar, name);
+  $("chs").innerHTML = "";
+  CHANNELS.forEach(([id, label]) => { const b = document.createElement("button");
+    b.className = "ch"; b.textContent = "# " + label; b.dataset.id = id;
+    b.onclick = () => open(id); $("chs").append(b); });
+  live = sb.channel("room").on("postgres_changes", {event: "*", schema: "public", table: "messages"},
+    p => { if (p.eventType === "DELETE") gone(p.old.id);
+           else if (p.eventType === "INSERT" && p.new.channel === cur) add(p.new, true); }).subscribe();
+  open(cur);
+}
+async function open(id) {
+  cur = id;
+  document.querySelectorAll(".ch").forEach(b => b.classList.toggle("on", b.dataset.id === id));
+  $("top").textContent = "# " + CHANNELS.find(c => c[0] === id)[1];
+  $("list").innerHTML = "";
+  const {data, error} = await sb.from("messages").select("*").eq("channel", id).order("created_at", {ascending: false}).limit(100);
+  if (error) return add({username: "system", body: "خطا: " + error.message});
+  data.reverse().forEach(m => add(m));
+  $("list").scrollTop = $("list").scrollHeight;
+}
+function add(m, scroll) {
+  const d = document.createElement("div"); d.className = "m" + (m.user_id === me.id ? " mine" : "");
+  if (m.id) d.dataset.id = m.id;
+  if (m.id && m.user_id === me.id) { const x = document.createElement("button");
+    x.className = "del"; x.textContent = "🗑"; x.title = "حذف برای همه"; x.onclick = () => del(m); d.append(x); }
+  const n = document.createElement("div"); n.className = "n";
+  const a = document.createElement("img"); a.className = "av"; a.src = avSrc(m.avatar_url, m.username);
+  n.append(a, m.username); d.append(n);
+  if (m.body) { const t = document.createElement("div"); t.className = "t"; t.dir = "auto"; t.textContent = m.body; d.append(t); }
+  if (m.media_url) { const k = (m.media_type || "").split("/")[0];
+    const e = document.createElement(k === "image" ? "img" : k === "video" ? "video" : "audio");
+    e.src = m.media_url; if (k !== "image") e.controls = true; d.append(e); }
+  $("list").append(d); if (scroll) $("list").scrollTop = $("list").scrollHeight;
+}
+function gone(id) { const e = document.querySelector(`[data-id="${id}"]`); if (e) e.remove(); }
+async function del(m) {
+  if (!confirm("این پیام برای همه پاک شود؟")) return;
+  const {error} = await sb.from("messages").delete().eq("id", m.id);
+  if (error) return add({username: "system", body: "حذف نشد: " + error.message});
+  gone(m.id);
+  if (m.media_url && m.media_url.includes("/media/"))
+    await sb.storage.from("media").remove([decodeURIComponent(m.media_url.split("/media/")[1])]);
+}
+async function post(row) {
+  const {error} = await sb.from("messages").insert({channel: cur, username: name, avatar_url: avatar, ...row});
+  if (error) add({username: "system", body: "ارسال نشد: " + error.message});
+}
+$("f").onsubmit = async e => { e.preventDefault(); const b = $("msg").value.trim();
+  if (!b) return; $("msg").value = ""; await post({body: b}); };
+
+async function upload(file) {
+  if (file.size > 50 * 1024 * 1024) return add({username: "system", body: "فایل بیشتر از ۵۰ مگابایت است"});
+  const ext = (file.name.split(".").pop() || "bin").toLowerCase();
+  const path = `${me.id}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+  const {error} = await sb.storage.from("media").upload(path, file, {contentType: file.type});
+  if (error) return add({username: "system", body: "آپلود نشد: " + error.message});
+  await post({media_url: sb.storage.from("media").getPublicUrl(path).data.publicUrl, media_type: file.type});
+}
+function avSrc(u, n) {
+  if (u) return u;
+  const l = ((n || "?")[0] || "?").toUpperCase();
+  return "data:image/svg+xml," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='#2a2d35'/><text x='16' y='22' font-size='16' font-family='Arial' font-weight='700' fill='#e4ff1a' text-anchor='middle'>${l}</text></svg>`);
+}
+function shrink(f) {
+  return new Promise(res => { const i = new Image();
+    i.onload = () => { const s = 128, c = document.createElement("canvas"); c.width = c.height = s;
+      const m = Math.min(i.width, i.height);
+      c.getContext("2d").drawImage(i, (i.width - m) / 2, (i.height - m) / 2, m, m, 0, 0, s, s);
+      URL.revokeObjectURL(i.src); c.toBlob(res, "image/jpeg", 0.85); };
+    i.onerror = () => res(null); i.src = URL.createObjectURL(f); });
+}
+$("myav").onclick = () => $("pf").click();
+$("pf").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  const blob = await shrink(f);
+  if (!blob) return add({username: "system", body: "این عکس خوانده نشد"});
+  const path = `${me.id}/avatar-${Date.now()}.jpg`;
+  const {error} = await sb.storage.from("media").upload(path, blob, {contentType: "image/jpeg"});
+  if (error) return add({username: "system", body: "آپلود نشد: " + error.message});
+  avatar = sb.storage.from("media").getPublicUrl(path).data.publicUrl;
+  await sb.auth.updateUser({data: {avatar}}); $("myav").src = avatar;
+};
+$("clip").onclick = () => $("file").click();
+$("file").onchange = async e => { const f = e.target.files[0]; e.target.value = ""; if (f) await upload(f); };
+$("mic").onclick = async () => {
+  if (rec && rec.state === "recording") return rec.stop();
+  try {
+    const s = await navigator.mediaDevices.getUserMedia({audio: true});
+    rec = new MediaRecorder(s); chunks = [];
+    rec.ondataavailable = e => chunks.push(e.data);
+    rec.onstop = async () => { s.getTracks().forEach(t => t.stop()); $("mic").classList.remove("rec");
+      const type = rec.mimeType || "audio/webm";
+      await upload(new File(chunks, "voice." + (type.includes("mp4") ? "m4a" : "webm"), {type})); };
+    rec.start(); $("mic").classList.add("rec");
+  } catch { add({username: "system", body: "دسترسی به میکروفون داده نشد"}); }
+};
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>
