@@ -1,0 +1,16 @@
+
+.env
+.env.*
+!.env.example
+
+secrets/
+*.pem
+*.key
+
+node_modules/
+dist/
+build/
+
+*.log
+.DS_Store
+Thumbs.db
